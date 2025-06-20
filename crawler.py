@@ -4,10 +4,11 @@ from bs4 import BeautifulSoup
 
 class WebPageReport():
     """This is the class that defines the crawler, it's functions and attributes."""
-    def __init__(self, url):
+    def __init__(self, url, crawl_limit):
         """This initialises the crawler and sets out the the metrics gathered by the page report."""
         
         self.url = url 
+        self.crawl_limit = crawl_limit
         # Content quality metrics
         self.word_count = 0
         self.too_short = False
@@ -29,16 +30,29 @@ class WebPageReport():
         self.external_links_count = 0
     
     def run(self):
-        
-        self.response_time = self.count_response_time()
+        visited_links = []
+        links_to_visit = [(self.url)]
+        while len(links_to_visit) and (visited_links) < self.crawl_limit:
+            current_url = links_to_visit.pop(0)
+            self.response_time = self.count_response_time(current_url)
 
-    def count_response_time(self):
+            try:
+                response = requests.get(current_url)
+                soup = BeautifulSoup(response.text, "html.parser")
+                self.title = soup.title_text()
+                visited_links.append((current_url, self.title))
+                
+            except Exception as e:
+                print(f"Error fetching {current_url}: {e}")
+                
+
+    def count_response_time(self, current_url):
         """Counts the time a http request to the page takes to complete."""
         start_time = time.time()
-        response = requests.get(self.url)
+        response = requests.get(current_url)
         end_time = time.time()
         response_time = end_time - start_time
         return response_time
 
 
-quality_checker = WebPageReport("https://developer.mozilla.org")
+quality_checker = WebPageReport("https://developer.mozilla.org", 10)
