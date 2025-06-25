@@ -43,7 +43,7 @@ class WebPageReport():
             # Creates report instance for checking each url.
             report = WebPageReport(current_url, self.crawl_limit)
             # Saves the response time to the report.
-            report.response_time = self.count_response_time(current_url)
+            report.response_time = self._count_response_time(current_url)
 
             try:
                 # Submits a HTTP request to the url and parses the response.
@@ -54,7 +54,8 @@ class WebPageReport():
 
                 # Saves the title and word count to the report and if there is no title, adds a No title string instead.
                 report.title = soup.title.string if soup.title else "No title"
-                report.word_count = self.count_words(soup)
+                report.word_count = self._count_words(soup)
+                report.image_count = self._count_images(soup)
 
             except Exception as e:
                 print(f"Error fetching {current_url}: {e}")
@@ -66,12 +67,12 @@ class WebPageReport():
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Page: {report.url} \nPage Title: {report.title} \nResponse time: {report.response_time} \nWord count: {report.word_count}")
+            print(f"Page: {report.url} \nPage Title: {report.title} \nResponse time: {report.response_time} \nWord count: {report.word_count} \nImage count: {report.image_count}")
 
         
         return checked_links
 
-    def count_response_time(self, current_url):
+    def _count_response_time(self, current_url):
         """Counts the time a http request to the page takes to complete."""
         start_time = time.time()
         response = requests.get(current_url)
@@ -79,13 +80,20 @@ class WebPageReport():
         response_time = end_time - start_time
         return response_time
 
-    def count_words(self, soup):
+    def _count_words(self, soup):
         """Counts the words in the text of the page."""
-        text = soup.get_text()
         word_count = 0
-        for word in text:
+        text = soup.get_text()
+        for _ in text:
             word_count += 1
         return word_count
+    
+    def _count_images(self, soup):
+        """Counts the images in the page."""
+        images = soup.find_all("img")
+        image_count = len(images)
+        return image_count
+
 
 
 quality_checker = WebPageReport("https://developer.mozilla.org/", 10)
