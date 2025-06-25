@@ -38,28 +38,35 @@ class WebPageReport():
         links_to_check = [self.url]
         # Loops through links to crawl until there are either no further links to visit or the crawl limit has been reached.
         while len(links_to_check) and len(checked_links) < self.crawl_limit:
+            # Removes the first link to create the report on.
             current_url = links_to_check.pop(0)
+            # Creates report instance for checking each url.
             report = WebPageReport(current_url, self.crawl_limit)
+            # Saves the response time to the report.
             report.response_time = self.count_response_time(current_url)
 
             try:
+                # Submits a HTTP request to the url and parses the response.
                 response = requests.get(current_url)
                 soup = BeautifulSoup(response.text, "html.parser")
-                report.title = soup.title.string if soup.title else "No title"
+                # Adds the url to the checked links list.
                 checked_links.append(current_url)
 
-                
-                
+                # Saves the title and word count to the report and if there is no title, adds a No title string instead.
+                report.title = soup.title.string if soup.title else "No title"
+                report.word_count = self.count_words(soup)
+
             except Exception as e:
                 print(f"Error fetching {current_url}: {e}")
 
+            # Adds the completed report to the reports list.
             self.reports.append(report)
 
         for link in checked_links:
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Page: {report.url} \nPage Title: {report.title} \nResponse time: {report.response_time}")
+            print(f"Page: {report.url} \nPage Title: {report.title} \nResponse time: {report.response_time} \nWord count: {report.word_count}")
 
         
         return checked_links
@@ -71,6 +78,14 @@ class WebPageReport():
         end_time = time.time()
         response_time = end_time - start_time
         return response_time
+
+    def count_words(self, soup):
+        """Counts the words in the text of the page."""
+        text = soup.get_text()
+        word_count = 0
+        for word in text:
+            word_count += 1
+        return word_count
 
 
 quality_checker = WebPageReport("https://developer.mozilla.org/", 10)
