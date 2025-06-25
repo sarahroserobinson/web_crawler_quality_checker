@@ -9,6 +9,7 @@ class WebPageReport():
         
         self.url = url 
         self.crawl_limit = crawl_limit
+
         # Content quality metrics
         self.word_count = 0
         self.too_short = False
@@ -30,21 +31,27 @@ class WebPageReport():
         self.external_links_count = 0
     
     def run(self):
+        """Main function that runs the crawler."""
+        # Lists to store visited links and links to visit
         visited_links = []
-        links_to_visit = [(self.url)]
-        while len(links_to_visit) and (visited_links) < self.crawl_limit:
+        links_to_visit = [self.url]
+        # Loops through links to crawl until there are either no further links to visit or the crawl limit has been reached.
+        while len(links_to_visit) and len(visited_links) < self.crawl_limit:
             current_url = links_to_visit.pop(0)
             self.response_time = self.count_response_time(current_url)
 
             try:
                 response = requests.get(current_url)
                 soup = BeautifulSoup(response.text, "html.parser")
-                self.title = soup.title_text()
-                visited_links.append((current_url, self.title))
+                self.title = soup.title.string if soup.title else "No title"
+                visited_links.append(current_url)
                 
             except Exception as e:
                 print(f"Error fetching {current_url}: {e}")
-                
+
+        for link in visited_links:
+            print(f"Visiting page: {link}")
+        return visited_links
 
     def count_response_time(self, current_url):
         """Counts the time a http request to the page takes to complete."""
@@ -55,4 +62,5 @@ class WebPageReport():
         return response_time
 
 
-quality_checker = WebPageReport("https://developer.mozilla.org", 10)
+quality_checker = WebPageReport("https://developer.mozilla.org/", 10)
+quality_checker.run()
