@@ -1,5 +1,6 @@
 import requests, time
 from bs4 import BeautifulSoup
+from urllib.parse import urljoin
 
 
 class WebPageReport():
@@ -57,6 +58,11 @@ class WebPageReport():
                 report.word_count = self._count_words(soup)
                 report.image_count = self._count_images(soup)
 
+                extracted_links = self._extract_links(soup, current_url)
+                for link in extracted_links:
+                    if link not in checked_links and link not in links_to_check:
+                        links_to_check.append(link)
+
             except Exception as e:
                 print(f"Error fetching {current_url}: {e}")
 
@@ -93,6 +99,16 @@ class WebPageReport():
         images = soup.find_all("img")
         image_count = len(images)
         return image_count
+    
+    def _extract_links(self, soup, current_url):
+        """Finds the links from the current page and returns them."""
+        links = []
+        for url in soup.findAll('a'):
+            href = url.get("href")
+            if href and not href.startswith(("mailto:", "javascript:", "#")):
+                full_url = urljoin(current_url, href)
+                links.append(full_url)
+        return links
 
 
 
