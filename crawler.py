@@ -37,7 +37,7 @@ class WebPageReport():
         # Lists to store visited links and links to visit
         checked_links = []
         links_to_check = [self.url]
-        # Loops through links to crawl until there are either no further links to visit or the crawl limit has been reached.
+        # Loops through links to crawl until there are either no further links to check or the crawl limit has been reached.
         while len(links_to_check) and len(checked_links) < self.crawl_limit:
             # Removes the first link to create the report on.
             current_url = links_to_check.pop(0)
@@ -53,11 +53,12 @@ class WebPageReport():
                 # Adds the url to the checked links list.
                 checked_links.append(current_url)
 
-                # Saves the title and word count to the report and if there is no title, adds a No title string instead.
+                # Saves the title, image count and word count to the report and if there is no title, adds a No title string instead.
                 report.title = soup.title.string if soup.title else "No title"
                 report.word_count = self._count_words(soup)
                 report.image_count = self._count_images(soup)
 
+                # Extracts the links from the current url and adds them to the links to check list.
                 extracted_links = self._extract_links(soup, current_url)
                 for link in extracted_links:
                     if link not in checked_links and link not in links_to_check:
@@ -90,7 +91,8 @@ class WebPageReport():
         """Counts the words in the text of the page."""
         word_count = 0
         text = soup.get_text()
-        for _ in text:
+        split_words = text.split()
+        for _ in split_words:
             word_count += 1
         return word_count
     
