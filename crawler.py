@@ -1,16 +1,16 @@
 import requests, time
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
+
 
 
 class WebPageReport():
     """This is the class that defines the crawler, it's functions and attributes."""
-    def __init__(self, url, robot_url, crawl_limit):
+    def __init__(self, url, crawl_limit):
         """This initialises the crawler and sets out the the metrics gathered by the page report."""
         
         self.url = url 
-        self.robot_url = robot_url
         self.crawl_limit = crawl_limit
         self.reports = []
 
@@ -37,9 +37,7 @@ class WebPageReport():
     def run(self):
         """Main function that runs the crawler."""
         # Lists to store visited links and links to visit
-        rp = RobotFileParser()
-        rp.set_url(self.robot_url)
-        rp.read()
+        
         checked_links = []
         links_to_check = [self.url]
         # Loops through links to crawl until there are either no further links to check or the crawl limit has been reached.
@@ -47,11 +45,11 @@ class WebPageReport():
             # Removes the first link to create the report on.
             current_url = links_to_check.pop(0)
             # Creates report instance for checking each url.
-            report = WebPageReport(current_url, self.robot_url, self.crawl_limit)
+            report = WebPageReport(current_url, self.crawl_limit)
             # Saves the response time to the report.
             report.response_time = self._count_response_time(current_url)
 
-            if not rp.can_fetch("*", current_url):
+            if not self._ask_permission_to_crawl(current_url):
                 print(f"Permission denied by robots.txt. Unable to crawl: {current_url}")
                 continue
 
@@ -120,8 +118,17 @@ class WebPageReport():
                 full_url = urljoin(current_url, href)
                 links.append(full_url)
         return links
+    
+    def _ask_permission_to_crawl(self, current_url):
+        rp = RobotFileParser()
+        parsed_url = urlparse(current_url)
+        robot_url = f"{parsed_url.scheme}://{parsed_url.netloc}/robots.txt"
+        rp.set_url(robot_url)
+        rp.read()
+        return rp.can_fetch("*", current_url)
 
 
 
-quality_checker = WebPageReport("https://developer.mozilla.org/", "https://developer.mozilla.org/robots.txt", 10)
+
+quality_checker = WebPageReport("https://developer.mozilla.org/", 10)
 quality_checker.run()
