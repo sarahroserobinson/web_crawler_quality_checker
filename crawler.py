@@ -62,8 +62,9 @@ class WebPageReport():
 
                 # Saves the title, image count and word count to the report and if there is no title, adds a No title string instead.
                 report.title = soup.title.string if soup.title else "No title"
-                report.word_count = self._count_words(soup)
                 report.image_count = self._count_images(soup)
+                report.word_count = self._count_words(soup)
+                report.too_short = True if report.word_count < 100 else False
 
                 # Extracts the links from the current url and adds them to the links to check list.
                 extracted_links = self._extract_links(soup, current_url)
@@ -81,7 +82,7 @@ class WebPageReport():
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Page: {report.url} \nPage Title: {report.title} \nResponse time: {report.response_time} \nWord count: {report.word_count} \nImage count: {report.image_count}")
+            print(f"Page: {report.url} \nPage Title: {report.title} \nResponse time: {report.response_time} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count}")
 
         
         return checked_links
