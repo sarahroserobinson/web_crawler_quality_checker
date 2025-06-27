@@ -45,17 +45,19 @@ class WebPageReport():
             # Removes the first link to create the report on.
             current_url = links_to_check.pop(0)
             # Creates report instance for checking each url.
-            report = WebPageReport(current_url, self.crawl_limit)
-            # Saves the response time to the report.
-            report.response_time = self._count_response_time(current_url)
+            report = WebPageReport(current_url, self.crawl_limit)   
 
             if not self._ask_permission_to_crawl(current_url):
                 print(f"Permission denied by robots.txt. Unable to crawl: {current_url}")
                 continue
 
             try:
-                # Submits a HTTP request to the url and parses the response.
+                # Submits a HTTP request to the url and parses the response. Saves the response time to the report.
+                start_time = time.time()
                 response = requests.get(current_url)
+                end_time = time.time()
+                report.response_time = end_time - start_time
+
                 soup = BeautifulSoup(response.text, "html.parser")
                 # Adds the url to the checked links list.
                 checked_links.append(current_url)
@@ -87,14 +89,6 @@ class WebPageReport():
 
         
         return checked_links
-
-    def _count_response_time(self, current_url):
-        """Counts the time a http request to the page takes to complete."""
-        start_time = time.time()
-        response = requests.get(current_url)
-        end_time = time.time()
-        response_time = end_time - start_time
-        return response_time
 
     def _count_words(self, soup):
         """Counts the words in the text of the page."""
