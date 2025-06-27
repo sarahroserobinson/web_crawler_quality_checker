@@ -62,6 +62,7 @@ class WebPageReport():
 
                 # Saves the title, image count and word count to the report and if there is no title, adds a No title string instead.
                 report.title = soup.title.string if soup.title else "No title"
+                report.missing_h1 = self._check_for_h1(soup)
                 report.image_count = self._count_images(soup)
                 report.word_count = self._count_words(soup)
                 report.too_short = True if report.word_count < 100 else False
@@ -82,7 +83,7 @@ class WebPageReport():
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Page: {report.url} \nPage Title: {report.title} \nResponse time: {report.response_time} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count}")
+            print(f"Page: {report.url} \nPage Title: {report.title} \nMissing H1 Title: {report.missing_h1} \nResponse time: {report.response_time} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count}")
 
         
         return checked_links
@@ -127,6 +128,9 @@ class WebPageReport():
         rp.set_url(robot_url)
         rp.read()
         return rp.can_fetch("*", current_url)
+    
+    def _check_for_h1(self, soup):
+        return False if soup.find_all('h1') else True
 
 
 
