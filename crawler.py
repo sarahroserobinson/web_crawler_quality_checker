@@ -68,7 +68,7 @@ class WebPageReport():
                 report.image_count = self._count_images(soup)
                 report.word_count = self._count_words(soup)
                 report.too_short = True if report.word_count < 100 else False
-                report.status_code = response.status_code
+                report.status_code = f"{response.status_code} {response.reason}"
 
                 # Extracts the links from the current url and adds them to the links to check list.
                 extracted_links = self._extract_links(soup, current_url)
