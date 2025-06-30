@@ -65,10 +65,11 @@ class WebPageReport():
                 # Saves metrics to the report
                 report.title = soup.title.string if soup.title else "No title"
                 report.missing_h1 = self._check_for_h1(soup)
-                report.image_count = self._count_images(soup)
                 report.word_count = self._count_words(soup)
                 report.too_short = True if report.word_count < 100 else False
+                report.image_count = self._count_images(soup)
                 report.status_code = f"{response.status_code} {response.reason}"
+                report.page_size = self._get_page_size(response)
 
                 # Extracts the links from the current url and adds them to the links to check list.
                 extracted_links = self._extract_links(soup, current_url)
@@ -86,7 +87,7 @@ class WebPageReport():
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Webpage Quality Report \nPage: {report.url}\n SEO \nPage Title: {report.title} \nContent Quality \nMissing H1 Title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nLink Health \n")
+            print(f"Webpage Quality Report \nPage: {report.url}\n SEO \nPage Title: {report.title} \nContent Quality \nMissing H1 Title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \n")
 
         
         return checked_links
@@ -126,6 +127,10 @@ class WebPageReport():
     
     def _check_for_h1(self, soup):
         return False if soup.find_all('h1') else True
+    
+    def _get_page_size(self, response):
+        return len(response.content)
+
 
 
 
