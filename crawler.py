@@ -45,11 +45,15 @@ class WebPageReport():
             # Removes the first link to create the report on.
             current_url = links_to_check.pop(0)
             # Creates report instance for checking each url.
-            report = WebPageReport(current_url, self.crawl_limit)   
 
+            if self._check_if_already_visited(current_url, checked_links):
+                continue 
+            
             if not self._ask_permission_to_crawl(current_url):
                 print(f"Permission denied by robots.txt. Unable to crawl: {current_url}")
                 continue
+
+            report = WebPageReport(current_url, self.crawl_limit)
 
             try:
                 # Submits a HTTP request to the url and parses the response. Saves the response time to the report.
@@ -91,6 +95,9 @@ class WebPageReport():
 
         
         return checked_links
+    
+    def _check_if_already_visited(self, current_url, checked_links):
+        return any(link == current_url for link in checked_links)
 
     def _count_words(self, soup):
         """Counts the words in the text of the page."""
