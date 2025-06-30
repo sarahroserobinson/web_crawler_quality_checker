@@ -40,6 +40,7 @@ class WebPageReport():
         
         checked_links = []
         links_to_check = [self.url]
+        titles = []
         # Loops through links to crawl until there are either no further links to check or the crawl limit has been reached.
         while len(links_to_check) and len(checked_links) < self.crawl_limit:
             # Removes the first link to create the report on.
@@ -74,6 +75,7 @@ class WebPageReport():
                 report.image_count = self._count_images(soup)
                 report.status_code = f"{response.status_code} {response.reason}"
                 report.page_size = self._get_page_size(response)
+                report.title_duplicate = self._check_for_duplicate_title(soup, titles)
 
                 # Extracts the links from the current url and adds them to the links to check list.
                 extracted_links = self._extract_links(soup, current_url)
@@ -91,13 +93,33 @@ class WebPageReport():
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Webpage Quality Report \nPage: {report.url}\n SEO \nPage Title: {report.title} \nContent Quality \nMissing H1 Title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \n")
+            print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \n")
 
         
         return checked_links
     
     def _check_if_already_visited(self, current_url, checked_links):
+        """Returns boolean value depending on whether the current link has been checked before."""
         return any(link == current_url for link in checked_links)
+    
+    def _ask_permission_to_crawl(self, current_url):
+        """Returns boolean value depending on whether robots.txt grants access to crawl the page."""
+        rp = RobotFileParser()
+        parsed_url = urlparse(current_url)
+        robot_url = f"{parsed_url.scheme}://{parsed_url.netloc}/robots.txt"
+        rp.set_url(robot_url)
+        rp.read()
+        return rp.can_fetch("*", current_url)
+    
+    def _extract_links(self, soup, current_url):
+        """Finds the links from the current page and returns them."""
+        links = []
+        for url in soup.findAll('a'):
+            href = url.get("href")
+            if href and not href.startswith(("mailto:", "javascript:", "#")):
+                full_url = urljoin(current_url, href)
+                links.append(full_url)
+        return links
 
     def _count_words(self, soup):
         """Counts the words in the text of the page."""
@@ -114,30 +136,21 @@ class WebPageReport():
         image_count = len(images)
         return image_count
     
-    def _extract_links(self, soup, current_url):
-        """Finds the links from the current page and returns them."""
-        links = []
-        for url in soup.findAll('a'):
-            href = url.get("href")
-            if href and not href.startswith(("mailto:", "javascript:", "#")):
-                full_url = urljoin(current_url, href)
-                links.append(full_url)
-        return links
-    
-    def _ask_permission_to_crawl(self, current_url):
-        rp = RobotFileParser()
-        parsed_url = urlparse(current_url)
-        robot_url = f"{parsed_url.scheme}://{parsed_url.netloc}/robots.txt"
-        rp.set_url(robot_url)
-        rp.read()
-        return rp.can_fetch("*", current_url)
-    
     def _check_for_h1(self, soup):
+        """Returns boolean value depending on whether a h1 title is found."""
         return False if soup.find_all('h1') else True
     
     def _get_page_size(self, response):
+        """Returns the length of bytes in the response."""
         return len(response.content)
 
+    def _check_for_duplicate_title(self, soup, titles):
+        title = soup.title.string
+        if title not in titles:
+            titles.append(title)
+            return False
+        else:
+            return True
 
 
 
