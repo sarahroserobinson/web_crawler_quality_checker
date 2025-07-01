@@ -33,7 +33,7 @@ class WebPageReport():
         self.broken_links = []
         self.internal_links_count = 0
         self.external_links_count = 0
-    
+
     def run(self):
         """Main function that runs the crawler."""
         # Lists to store visited links and links to visit
@@ -77,8 +77,9 @@ class WebPageReport():
                 report.page_size = self._get_page_size(response)
                 report.title_duplicate = self._check_for_duplicate_title(soup, titles)
 
+
                 # Extracts the links from the current url and adds them to the links to check list.
-                extracted_links = self._extract_links(soup, current_url)
+                extracted_links = self._extract_links(soup, current_url, report)
                 for link in extracted_links:
                     if link not in checked_links and link not in links_to_check:
                         links_to_check.append(link)
@@ -93,8 +94,8 @@ class WebPageReport():
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \n")
-
+            print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \nNumber of external links: {report.external_links_count} \nNumber of internal links: {report.internal_links_count}")
+        
         
         return checked_links
     
@@ -111,14 +112,22 @@ class WebPageReport():
         rp.read()
         return rp.can_fetch("*", current_url)
     
-    def _extract_links(self, soup, current_url):
+    def _extract_links(self, soup, current_url, report):
         """Finds the links from the current page and returns them."""
         links = []
+        parsed_url = urlparse(current_url)
+        domain = parsed_url.netloc
         for url in soup.findAll('a'):
             href = url.get("href")
             if href and not href.startswith(("mailto:", "javascript:", "#")):
                 full_url = urljoin(current_url, href)
                 links.append(full_url)
+
+            if urlparse(full_url).netloc == domain:
+                report.internal_links_count += 1
+            else:
+                report.external_links_count += 1
+
         return links
 
     def _count_words(self, soup):
