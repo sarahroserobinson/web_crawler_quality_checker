@@ -59,7 +59,7 @@ class WebPageReport():
             try:
                 # Submits a HTTP request to the url and parses the response. Saves the response time to the report.
                 start_time = time.time()
-                response = requests.get(current_url)
+                response = requests.get(current_url, timeout=5)
                 end_time = time.time()
                 report.response_time = end_time - start_time
 
@@ -76,6 +76,7 @@ class WebPageReport():
                 report.status_code = f"{response.status_code} {response.reason}"
                 report.page_size = self._get_page_size(response)
                 report.title_duplicate = self._check_for_duplicate_title(soup, titles)
+                
 
 
                 # Extracts the links from the current url and adds them to the links to check list.
@@ -83,6 +84,8 @@ class WebPageReport():
                 for link in extracted_links:
                     if link not in checked_links and link not in links_to_check:
                         links_to_check.append(link)
+                
+                report.broken_links = self._check_for_broken_links(extracted_links)
 
             except Exception as e:
                 print(f"Error fetching {current_url}: {e}")
@@ -94,7 +97,7 @@ class WebPageReport():
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \nNumber of external links: {report.external_links_count} \nNumber of internal links: {report.internal_links_count}")
+            print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \nBroken Links: {report.broken_links} \nNumber of external links: {report.external_links_count} \nNumber of internal links: {report.internal_links_count}")
         
         
         return checked_links
@@ -123,10 +126,10 @@ class WebPageReport():
                 full_url = urljoin(current_url, href)
                 links.append(full_url)
 
-            if urlparse(full_url).netloc == domain:
-                report.internal_links_count += 1
-            else:
-                report.external_links_count += 1
+                if urlparse(full_url).netloc == domain:
+                    report.internal_links_count += 1
+                else:
+                    report.external_links_count += 1
 
         return links
 
@@ -154,12 +157,26 @@ class WebPageReport():
         return len(response.content)
 
     def _check_for_duplicate_title(self, soup, titles):
+        """Returns boolean value depending on whether the title has already been used."""
         title = soup.title.string
         if title not in titles:
             titles.append(title)
             return False
         else:
             return True
+
+    def _check_for_broken_links(self, extracted_links):
+        """Returns any broken links"""
+        broken_links = []
+        for link in extracted_links:
+            response = requests.get(link, stream=True, timeout=5)
+            if response.status_code >= 400 and response.status_code <= 600:
+                broken_links.append(link)
+        return broken_links
+
+
+
+            
 
 
 
