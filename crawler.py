@@ -192,10 +192,10 @@ class WebPageReport():
         print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \nBroken Links: {report.broken_links} \nRedirected Links: {report.redirected_links} \nNumber of external links: {report.external_links_count} \nNumber of internal links: {report.internal_links_count}")
     
     def create_filename(self):
-        parsed_url = urlparse(self.start_url)
+        parsed_url = urlparse(self.url)
         domain = parsed_url.netloc.replace('.', '-')
         todays_date = datetime.datetime.now().date()
-        filename = f"Quality-Report-{domain}-{todays_date}.{self.format}"
+        filename = f"Quality-Report-{domain}-{todays_date}.{self.file_format}"
         return filename
 
     def export_as_file(self, data):
@@ -204,15 +204,15 @@ class WebPageReport():
             if self.file_format == 'csv':
                 writer = csv.writer(file)
                 writer.writerows(data)
-            elif self.format == 'json':
+            elif self.file_format == 'json':
                 json.dump(data, file)
             else:
                 print("Unable to save to that format, please select either json or csv.")
-        print(f"Data has been imported to a {self.format} file named {filename}")
+        print(f"Data has been imported to a {self.file_format} file named {filename}")
 
 
 
             
 
-quality_checker = WebPageReport("https://developer.mozilla.org/", 10, json)
+quality_checker = WebPageReport("https://developer.mozilla.org/", 10, "json")
 quality_checker.run()
