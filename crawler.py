@@ -7,12 +7,11 @@ from urllib.robotparser import RobotFileParser
 
 class WebPageReport():
     """This is the class that defines the crawler, it's functions and attributes."""
-    def __init__(self, url, crawl_limit, file_format):
+    def __init__(self, url, crawl_limit):
         """This initialises the crawler and sets out the the metrics gathered by the page report."""
         
         self.url = url 
         self.crawl_limit = crawl_limit
-        self.file_format = file_format
         self.reports = []
 
         # Content quality metrics
@@ -56,7 +55,7 @@ class WebPageReport():
                 print(f"Permission denied by robots.txt. Unable to crawl: {current_url}")
                 continue
 
-            report = WebPageReport(current_url, self.crawl_limit, self.file_format)
+            report = WebPageReport(current_url, self.crawl_limit)
 
             try:
                 # Submits a HTTP request to the url and parses the response. Saves the response time to the report.
@@ -102,9 +101,9 @@ class WebPageReport():
         
         for report in self.reports:
             self._print_report(report)
-        
-        
+           
         return checked_links
+        
     
     def _check_if_already_visited(self, current_url, checked_links):
         """Returns boolean value depending on whether the current link has been checked before."""
@@ -195,24 +194,28 @@ class WebPageReport():
         parsed_url = urlparse(self.url)
         domain = parsed_url.netloc.replace('.', '-')
         todays_date = datetime.datetime.now().date()
-        filename = f"Quality-Report-{domain}-{todays_date}.{self.file_format}"
+        filename = f"Quality-Report-{domain}-{todays_date}"
         return filename
 
-    def export_as_file(self, data):
-        filename = self.create_filename()
+    def export_as_csv(self, reports):
+        filename = f"{self.create_filename()}.csv"
         with open(filename, 'w') as file:
-            if self.file_format == 'csv':
-                writer = csv.writer(file)
-                writer.writerows(data)
-            elif self.file_format == 'json':
-                json.dump(data, file)
-            else:
-                print("Unable to save to that format, please select either json or csv.")
-        print(f"Data has been imported to a {self.file_format} file named {filename}")
+            writer = csv.writer(file)
+            writer.writerows(reports)
 
+        print(f"Data has been imported to a csv file named {filename}")
+    
+    def export_as_json(self, reports):
+        filename = f"{self.create_filename()}.json"
+        with open(filename, 'w') as file:
+            json.dump(reports, file)
+        
+        print(f"Data has been imported to a json file named {filename}")
+        
 
 
             
 
-quality_checker = WebPageReport("https://developer.mozilla.org/", 10, "json")
+quality_checker = WebPageReport("https://developer.mozilla.org/", 10)
 quality_checker.run()
+quality_checker.export_as_file("json")
