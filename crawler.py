@@ -100,7 +100,7 @@ class WebPageReport():
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \nBroken Links: {report.broken_links} \nRedirected Links: {report.redirected_links} \nNumber of external links: {report.external_links_count} \nNumber of internal links: {report.internal_links_count}")
+            self._print_report(report)
         
         
         return checked_links
@@ -185,6 +185,9 @@ class WebPageReport():
                 requests.RequestException
                 broken_links.append(link)
         return (broken_links, redirected_links)
+    
+    def _print_report(self, report):
+        print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \nBroken Links: {report.broken_links} \nRedirected Links: {report.redirected_links} \nNumber of external links: {report.external_links_count} \nNumber of internal links: {report.internal_links_count}")
 
 
 
