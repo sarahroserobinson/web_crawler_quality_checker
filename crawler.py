@@ -1,4 +1,4 @@
-import requests, time
+import requests, time, json, csv, datetime
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
@@ -7,11 +7,12 @@ from urllib.robotparser import RobotFileParser
 
 class WebPageReport():
     """This is the class that defines the crawler, it's functions and attributes."""
-    def __init__(self, url, crawl_limit):
+    def __init__(self, url, crawl_limit, file_format):
         """This initialises the crawler and sets out the the metrics gathered by the page report."""
         
         self.url = url 
         self.crawl_limit = crawl_limit
+        self.file_format = file_format
         self.reports = []
 
         # Content quality metrics
@@ -55,7 +56,7 @@ class WebPageReport():
                 print(f"Permission denied by robots.txt. Unable to crawl: {current_url}")
                 continue
 
-            report = WebPageReport(current_url, self.crawl_limit)
+            report = WebPageReport(current_url, self.crawl_limit, self.file_format)
 
             try:
                 # Submits a HTTP request to the url and parses the response. Saves the response time to the report.
@@ -169,7 +170,7 @@ class WebPageReport():
             return True
 
     def _check_link_health(self, extracted_links):
-        """Returns any broken links"""
+        """Returns broken links and redirected links."""
         broken_links = []
         redirected_links = []
         for link in extracted_links[:10]:
@@ -187,11 +188,31 @@ class WebPageReport():
         return (broken_links, redirected_links)
     
     def _print_report(self, report):
+        """Structures and prints the report."""
         print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \nBroken Links: {report.broken_links} \nRedirected Links: {report.redirected_links} \nNumber of external links: {report.external_links_count} \nNumber of internal links: {report.internal_links_count}")
+    
+    def create_filename(self):
+        parsed_url = urlparse(self.start_url)
+        domain = parsed_url.netloc.replace('.', '-')
+        todays_date = datetime.datetime.now().date()
+        filename = f"Quality-Report-{domain}-{todays_date}.{self.format}"
+        return filename
+
+    def export_as_file(self, data):
+        filename = self.create_filename()
+        with open(filename, 'w') as file:
+            if self.file_format == 'csv':
+                writer = csv.writer(file)
+                writer.writerows(data)
+            elif self.format == 'json':
+                json.dump(data, file)
+            else:
+                print("Unable to save to that format, please select either json or csv.")
+        print(f"Data has been imported to a {self.format} file named {filename}")
 
 
 
             
 
-quality_checker = WebPageReport("https://developer.mozilla.org/", 10)
+quality_checker = WebPageReport("https://developer.mozilla.org/", 10, json)
 quality_checker.run()
