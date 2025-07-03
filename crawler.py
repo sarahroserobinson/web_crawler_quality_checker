@@ -30,7 +30,8 @@ class WebPageReport():
         self.response_time = 0
         
         # Link health metrics
-        self.broken_links = []
+        self.broken_links = None
+        self.redirected_links = None
         self.internal_links_count = 0
         self.external_links_count = 0
 
@@ -85,7 +86,9 @@ class WebPageReport():
                     if link not in checked_links and link not in links_to_check:
                         links_to_check.append(link)
                 
-                report.broken_links = self._check_for_broken_links(extracted_links)
+                broken_and_redirected_links = self._check_link_health(extracted_links)
+                report.broken_links = broken_and_redirected_links[0]
+                report.redirected_links = broken_and_redirected_links[1]
 
             except Exception as e:
                 print(f"Error fetching {current_url}: {e}")
@@ -97,7 +100,7 @@ class WebPageReport():
             print(f"Completing quality check of: {link}")
         
         for report in self.reports:
-            print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \nBroken Links: {report.broken_links} \nNumber of external links: {report.external_links_count} \nNumber of internal links: {report.internal_links_count}")
+            print(f"Webpage Quality Report \nPage: {report.url} \nSEO \nPage title: {report.title} \nDuplicated title: {report.title_duplicate} \nContent Quality \nMissing H1 title: {report.missing_h1} \nWord count: {report.word_count} \nToo short: {report.too_short} \nImage count: {report.image_count} \nPerformance \nResponse time: {report.response_time} \nStatus code: {report.status_code} \nPage size: {report.page_size} \nLink Health \nBroken Links: {report.broken_links} \nRedirected Links: {report.redirected_links} \nNumber of external links: {report.external_links_count} \nNumber of internal links: {report.internal_links_count}")
         
         
         return checked_links
@@ -165,21 +168,27 @@ class WebPageReport():
         else:
             return True
 
-    def _check_for_broken_links(self, extracted_links):
+    def _check_link_health(self, extracted_links):
         """Returns any broken links"""
         broken_links = []
-        for link in extracted_links:
-            response = requests.get(link, stream=True, timeout=5)
-            if response.status_code >= 400 and response.status_code <= 600:
+        redirected_links = []
+        for link in extracted_links[:10]:
+            try:
+                response = requests.get(link, stream=True, allow_redirects=False, timeout=5)
+                if response.status_code >= 400 and response.status_code < 600:
+                    broken_links.append(link)
+                elif response.status_code >= 300 and response.status_code < 400:
+                    redirected_links.append(link)
+            except requests.exceptions.TooManyRedirects:
+                redirected_links.append(link)
+            except:
+                requests.RequestException
                 broken_links.append(link)
-        return broken_links
+        return (broken_links, redirected_links)
 
 
 
             
-
-
-
 
 quality_checker = WebPageReport("https://developer.mozilla.org/", 10)
 quality_checker.run()
