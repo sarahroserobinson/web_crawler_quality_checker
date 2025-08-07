@@ -211,6 +211,28 @@ class WebPageReport():
             json.dump(reports, file)
         
         print(f"Data has been imported to a json file named {filename}")
+
+    def get_serialised_data(self):
+        """Serialises all reports into dictionaries for export."""
+        data = []
+        for report in self.reports:
+            data.append({
+                "url": report.url,
+                "title": report.title,
+                "title_duplicate": report.title_duplicate,
+                "missing_h1": report.missing_h1,
+                "word_count": report.word_count,
+                "too_short": report.too_short,
+                "image_count": report.image_count,
+                "response_time": report.response_time,
+                "status_code": report.status_code,
+                "page_size": report.page_size,
+                "broken_links": report.broken_links,
+                "redirected_links": report.redirected_links,
+                "external_links": report.external_links_count,
+                "internal_links": report.internal_links_count
+            })
+        return data
         
 
 
@@ -218,4 +240,5 @@ class WebPageReport():
 
 quality_checker = WebPageReport("https://developer.mozilla.org/", 10)
 quality_checker.run()
-quality_checker.export_as_file("json")
+quality_checker.export_as_csv()
+quality_checker.export_as_json()
