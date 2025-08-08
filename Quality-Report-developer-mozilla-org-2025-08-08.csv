@@ -1,10 +1,11 @@
 url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
-url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
-url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
-url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
-url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
-url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
-url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
-url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
-url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
-url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
+https://developer.mozilla.org/,MDN Web Docs,False,False,667,False,1,0.23110413551330566,200 OK,46960,[],[],35,62
+https://developer.mozilla.org/en-US/,MDN Web Docs,True,False,667,False,1,0.1764049530029297,200 OK,46960,[],[],35,62
+https://developer.mozilla.org/en-US/docs/Web,Web technology for developers | MDN,False,False,861,False,0,0.16641807556152344,200 OK,58478,[],[],23,100
+https://developer.mozilla.org/en-US/docs/Web/HTML,HTML: HyperText Markup Language | MDN,False,False,1247,False,0,0.18081426620483398,200 OK,124082,[],[],19,366
+https://developer.mozilla.org/en-US/docs/Web/CSS,CSS: Cascading Style Sheets | MDN,False,False,1516,False,0,0.19480395317077637,200 OK,289608,[],[],30,1193
+https://developer.mozilla.org/en-US/docs/Web/JavaScript,JavaScript | MDN,False,False,2149,False,0,0.195465087890625,200 OK,164205,[],[],27,520
+https://developer.mozilla.org/en-US/docs/Web/HTTP,HTTP: Hypertext Transfer Protocol | MDN,False,False,2369,False,0,0.18716907501220703,200 OK,190759,[],[],29,455
+https://developer.mozilla.org/en-US/docs/Web/API,Web APIs | MDN,False,False,1184,False,0,0.20358610153198242,200 OK,400820,[],[],19,1212
+https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions,Browser extensions - Mozilla | MDN,False,False,854,False,0,0.20776009559631348,200 OK,95580,[],[],43,231
+https://developer.mozilla.org/en-US/docs/Web/Accessibility,Accessibility | MDN,False,False,1222,False,0,0.23932266235351562,200 OK,103112,[],[],21,254

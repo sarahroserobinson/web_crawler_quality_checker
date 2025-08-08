@@ -202,8 +202,9 @@ class WebPageReport():
     def export_as_csv(self):
         data = self.get_serialised_data()
         filename = f"{self.create_filename()}.csv"
-        with open(filename, 'w') as file:
-            writer = csv.writer(file)
+        with open(filename, 'w', encoding='utf-8') as file:
+            writer = csv.DictWriter(file, fieldnames=data[0].keys())
+            writer.writeheader()
             writer.writerows(data)
 
         print(f"Data has been imported to a csv file named {filename}")
@@ -211,7 +212,7 @@ class WebPageReport():
     def export_as_json(self):
         data = self.get_serialised_data()
         filename = f"{self.create_filename()}.json"
-        with open(filename, 'w') as file:
+        with open(filename, 'w', encoding='utf-8') as file:
             json.dump(data, file)
         
         print(f"Data has been imported to a json file named {filename}")
