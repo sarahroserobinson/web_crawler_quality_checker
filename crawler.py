@@ -101,6 +101,8 @@ class WebPageReport():
         
         for report in self.reports:
             self._print_report(report)
+        
+
            
         return checked_links
         
@@ -197,18 +199,20 @@ class WebPageReport():
         filename = f"Quality-Report-{domain}-{todays_date}"
         return filename
 
-    def export_as_csv(self, reports):
+    def export_as_csv(self):
+        data = self.get_serialised_data()
         filename = f"{self.create_filename()}.csv"
         with open(filename, 'w') as file:
             writer = csv.writer(file)
-            writer.writerows(reports)
+            writer.writerows(data)
 
         print(f"Data has been imported to a csv file named {filename}")
     
-    def export_as_json(self, reports):
+    def export_as_json(self):
+        data = self.get_serialised_data()
         filename = f"{self.create_filename()}.json"
         with open(filename, 'w') as file:
-            json.dump(reports, file)
+            json.dump(data, file)
         
         print(f"Data has been imported to a json file named {filename}")
 
