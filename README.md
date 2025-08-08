@@ -35,6 +35,7 @@ The output is saved to:
 
 ```
 Quality-Report-<domain>-<date>.json
+Quality-Report-<domain>-<date>.csv
 ```
 
 
