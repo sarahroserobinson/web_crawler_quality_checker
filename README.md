@@ -27,8 +27,8 @@ Copy
 Edit
 quality_checker = WebPageReport("https://example.com", 10, "json")
 quality_checker.run()
-data = quality_checker.get_serialised_data()
-quality_checker.export_as_file(data)
+quality_checker.export_as_csv()
+quality_checker.export_as_json()
 ```
 
 The output is saved to:
