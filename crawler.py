@@ -1,9 +1,28 @@
-import requests, time, json, csv, datetime
+import requests, time, json, csv, datetime, sqlite3
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
 
+conn = sqlite3.connect('report_metrics.db')
+cursor = sqlite3.Cursor()
 
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS reports ()
+            url TEXT
+            title TEXT
+            title_duplicate BOOLEAN
+            missing_h1 BOOLEAN
+            word_count INTEGER
+            too_short BOOLEAN
+            image_count INTEGER
+            response_time REAL
+            status_code TEXT
+            page_size INTEGER
+            broken_links TEXT
+            redirected_links TEXT
+            external_links INTEGER
+            internal_links INTEGER   
+''')
 
 class WebPageReport():
     """This is the class that defines the crawler, it's functions and attributes."""
@@ -198,6 +217,7 @@ class WebPageReport():
         todays_date = datetime.datetime.now().date()
         filename = f"Quality-Report-{domain}-{todays_date}"
         return filename
+    
 
     def export_as_csv(self):
         data = self.get_serialised_data()

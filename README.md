@@ -34,8 +34,8 @@ quality_checker.export_as_json()
 The output is saved to:
 
 ```
-Quality-Report-<domain>-<date>.json
 Quality-Report-<domain>-<date>.csv
+Quality-Report-<domain>-<date>.json
 ```
 
 
