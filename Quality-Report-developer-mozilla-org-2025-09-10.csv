@@ -1,0 +1,11 @@
+url,title,title_duplicate,missing_h1,word_count,too_short,image_count,response_time,status_code,page_size,broken_links,redirected_links,external_links,internal_links
+https://developer.mozilla.org/,MDN Web Docs,False,False,1052,False,1,0.1345679759979248,200 OK,147168,[],[],37,133
+https://developer.mozilla.org/en-US/,MDN Web Docs,True,False,1052,False,1,0.1023721694946289,200 OK,147168,[],[],37,133
+https://developer.mozilla.org/en-US/docs/Web/HTML,HTML: HyperText Markup Language | MDN,False,False,1370,False,0,0.11923503875732422,200 OK,211076,[],[],19,427
+https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements,HTML elements reference - HTML | MDN,False,False,4956,False,0,0.11611795425415039,200 OK,260533,[],[],21,612
+https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Global_attributes,Global attributes - HTML | MDN,False,False,2313,False,0,0.11185002326965332,200 OK,242600,[],[],55,443
+https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes,HTML attribute reference - HTML | MDN,False,False,3281,False,0,0.12450480461120605,200 OK,274955,[],[],25,767
+https://developer.mozilla.org/en-US/docs/Web/HTML/Reference,HTML reference - HTML | MDN,False,False,669,False,0,0.11605501174926758,200 OK,199943,[],[],19,376
+https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images,Using responsive images in HTML - HTML | MDN,False,False,3450,False,5,0.12242388725280762,200 OK,229306,[],[],33,394
+https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Cheatsheet,HTML cheatsheet for syntax and common tasks - HTML | MDN,False,False,1102,False,0,0.11797523498535156,200 OK,224549,[],[],19,396
+https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Date_and_time_formats,Using date and time formats in HTML - HTML | MDN,False,False,3143,False,0,0.11118173599243164,200 OK,229471,[],[],24,384

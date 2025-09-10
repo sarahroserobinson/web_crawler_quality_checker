@@ -4,25 +4,26 @@ from urllib.parse import urljoin, urlparse
 from urllib.robotparser import RobotFileParser
 
 conn = sqlite3.connect('report_metrics.db')
-cursor = sqlite3.Cursor()
+cursor = conn.cursor()
 
-cursor.execute('''
-CREATE TABLE IF NOT EXISTS reports ()
-            url TEXT
-            title TEXT
-            title_duplicate BOOLEAN
-            missing_h1 BOOLEAN
-            word_count INTEGER
-            too_short BOOLEAN
-            image_count INTEGER
-            response_time REAL
-            status_code TEXT
-            page_size INTEGER
-            broken_links TEXT
-            redirected_links TEXT
-            external_links INTEGER
-            internal_links INTEGER   
-''')
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS reports (
+            url TEXT,
+            title TEXT,
+            title_duplicate BOOLEAN,
+            missing_h1 BOOLEAN,
+            word_count INTEGER,
+            too_short BOOLEAN,
+            image_count INTEGER,
+            response_time REAL,
+            status_code TEXT,
+            page_size INTEGER,
+            broken_links TEXT,
+            redirected_links TEXT,
+            external_links INTEGER,
+            internal_links INTEGER 
+) 
+""")
 
 class WebPageReport():
     """This is the class that defines the crawler, it's functions and attributes."""
@@ -120,7 +121,11 @@ class WebPageReport():
         
         for report in self.reports:
             self._print_report(report)
-        
+            cursor.execute("""
+                INSERT INTO reports (url, title, title_duplicate, missing_h1, word_count, too_short, image_count, response_time, status_code, page_size, broken_links, redirected_links, external_links, internal_links)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (report.url, report.title, report.title_duplicate, report.missing_h1, report.word_count, report.too_short, report.image_count, report.response_time, report.status_code, report.page_size, json.dumps(report.broken_links), json.dumps(report.redirected_links), report.external_links_count, report.internal_links_count))
+            conn.commit()
 
            
         return checked_links
